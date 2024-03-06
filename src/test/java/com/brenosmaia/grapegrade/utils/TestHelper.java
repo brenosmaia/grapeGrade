@@ -20,7 +20,7 @@ public class TestHelper {
         Random random = new Random();
         String uuid = UUID.randomUUID().toString();
         return User.builder()
-                .id(random.nextLong())
+                .id(String.valueOf(random.nextLong()))
                 .name("name-"+uuid)
                 .email(format("someone-%s@gmail.com", uuid))
                 .build();

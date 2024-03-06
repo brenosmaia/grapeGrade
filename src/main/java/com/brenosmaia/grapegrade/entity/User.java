@@ -1,25 +1,31 @@
 package com.brenosmaia.grapegrade.entity;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import java.io.Serializable;
+import java.time.LocalDateTime;
+
+import javax.persistence.Column;
+import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
+
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
-import java.time.LocalDateTime;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Entity
-@Table(name = "users")
-public class User {
-    @Id
-    @SequenceGenerator(name = "user_id_generator", sequenceName = "user_id_seq")
-    @GeneratedValue(generator = "user_id_generator")
-    private Long id;
+@Document(collection = "users")
+public class User implements Serializable {
+
+	private static final long serialVersionUID = -6533967676335051467L;
+
+	@Id
+    private String id;
 
     @Column(nullable = false)
     private String name;
@@ -27,10 +33,7 @@ public class User {
     @Column(nullable = false, unique = true)
     private String email;
 
-    @JsonProperty("created_at")
     private LocalDateTime createdAt;
-
-    @JsonProperty("updated_at")
     private LocalDateTime updatedAt;
 
     @PrePersist
