@@ -20,7 +20,7 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public Optional<User> getUserById(String id) {
+    public User getUserById(String id) {
         return userRepository.findById(id);
     }
 
@@ -36,7 +36,7 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public void deleteUser(String userId) {
-        userRepository.deleteById(userId);
+    public void deleteUser(String id) {
+        userRepository.delete(id);
     }
 }

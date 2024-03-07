@@ -46,10 +46,10 @@ public class UserController {
     @RequestMapping(path = "/users/{id}", method = RequestMethod.GET)
     public ResponseEntity<User> getUser(@PathVariable String id) {
         log.info("process=get-user, user_id={}", id);
-        Optional<User> user = userService.getUserById(id);
+        User user = userService.getUserById(id);
         
-        return user.map( u -> ResponseEntity.ok(u))
-                   .orElse(ResponseEntity.notFound().build());
+        return user == null ? ResponseEntity.notFound().build() 
+        		: ResponseEntity.ok(user);
     }
 
     @ResponseStatus(CREATED)
