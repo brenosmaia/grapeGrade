@@ -57,7 +57,7 @@ public class UserControllerTests {
 
     @Test
     public void should_get_user_by_id() throws Exception {
-        given(userService.getUserById(existingUser.getId())).willReturn(Optional.of(existingUser));
+        given(userService.getUserById(existingUser.getId())).willReturn(existingUser);
 
         this.mockMvc
                 .perform(get("/api/users/"+existingUser.getId()))

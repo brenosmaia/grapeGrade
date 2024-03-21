@@ -9,6 +9,8 @@ import javax.persistence.PreUpdate;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -29,10 +31,15 @@ public class User implements Serializable {
 
     @Column(nullable = false)
     private String name;
+    
+    @Column(nullable = false, unique = true)
+    private String username;
 
     @Column(nullable = false, unique = true)
     private String email;
-
+    
+    @Column(nullable = false)
+    private String password;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -49,4 +56,9 @@ public class User implements Serializable {
             updatedAt = LocalDateTime.now();
         }
     }
+    
+	public void setPassword(String password) {
+		PasswordEncoder encoder = new BCryptPasswordEncoder();
+		this.password = encoder.encode(password);
+	}
 }
