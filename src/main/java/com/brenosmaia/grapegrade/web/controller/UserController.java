@@ -2,16 +2,12 @@ package com.brenosmaia.grapegrade.web.controller;
 
 import static org.springframework.http.HttpStatus.CREATED;
 
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -56,6 +52,7 @@ public class UserController {
     @RequestMapping(path = "/users", method = RequestMethod.POST)
     public ResponseEntity<User> createUser(@RequestBody User user) {
         log.info("process=create-user, user_email={}", user.getEmail());
+        user.setCreatedAt(LocalDateTime.now());
         return ResponseEntity.ok(userService.createUser(user));
     }
 
@@ -63,6 +60,7 @@ public class UserController {
     public ResponseEntity<User> updateUser(@PathVariable String id, @RequestBody User user) {
         log.info("process=update-user, user_id={}", id);
         user.setId(id);
+        user.setUpdatedAt(LocalDateTime.now());
         return ResponseEntity.ok(userService.updateUser(user));
     }
 
