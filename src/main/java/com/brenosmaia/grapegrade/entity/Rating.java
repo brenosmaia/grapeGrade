@@ -30,6 +30,7 @@ public class Rating {
 	
 	private Integer grade;
 	private LocalDateTime createdAt;
+	private LocalDateTime updatedAt;
 
 	@Override
 	public String toString() {

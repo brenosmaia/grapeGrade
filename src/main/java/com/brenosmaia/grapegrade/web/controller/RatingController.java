@@ -14,8 +14,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.brenosmaia.grapegrade.entity.Wine;
-import com.brenosmaia.grapegrade.service.WineService;
+import com.brenosmaia.grapegrade.entity.Rating;
+import com.brenosmaia.grapegrade.service.RatingService;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -23,50 +23,50 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class RatingController {
 
-	private final WineService wineService;
+	private final RatingService ratingService;
 
     @Autowired
-    public RatingController(WineService wineService) {
-        this.wineService = wineService;
+    public RatingController(RatingService ratingService) {
+        this.ratingService = ratingService;
     }
 
-    @RequestMapping(path = "/wines", method = RequestMethod.GET)
-    public ResponseEntity<List<Wine>> getWines() {
-        log.info("process=get-wines");
-        List<Wine> wines = wineService.getAllWines();
+    @RequestMapping(path = "/ratings", method = RequestMethod.GET)
+    public ResponseEntity<List<Rating>> getRatings() {
+        log.info("process=get-ratings");
+        List<Rating> ratings = ratingService.getAllRatings();
         
-        return wines.isEmpty() ? ResponseEntity.notFound().build() 
-        		: ResponseEntity.ok(wines);
+        return ratings.isEmpty() ? ResponseEntity.notFound().build() 
+        		: ResponseEntity.ok(ratings);
     }
 
-    @RequestMapping(path = "/wines/{id}", method = RequestMethod.GET)
-    public ResponseEntity<Wine> getWine(@PathVariable String id) {
-        log.info("process=get-wine, wine_id={}", id);
-        Wine wine = wineService.getWineById(id);
+    @RequestMapping(path = "/ratings/{id}", method = RequestMethod.GET)
+    public ResponseEntity<Rating> getRating(@PathVariable String id) {
+        log.info("process=get-rating, rating_id={}", id);
+        Rating rating = ratingService.getRatingById(id);
         
-        return wine == null ? ResponseEntity.notFound().build() 
-        		: ResponseEntity.ok(wine);
+        return rating == null ? ResponseEntity.notFound().build() 
+        		: ResponseEntity.ok(rating);
     }
 
     @ResponseStatus(CREATED)
-    @RequestMapping(path = "/wines", method = RequestMethod.POST)
-    public ResponseEntity<Wine> createWine(@RequestBody Wine wine) {
-        log.info("process=create-wine, wine={}", wine.toString());
-        wine.setCreatedAt(LocalDateTime.now());
-        return ResponseEntity.ok(wineService.createWine(wine));
+    @RequestMapping(path = "/ratings", method = RequestMethod.POST)
+    public ResponseEntity<Rating> createRating(@RequestBody Rating rating) {
+        log.info("process=create-rating, rating={}", rating.toString());
+        rating.setCreatedAt(LocalDateTime.now());
+        return ResponseEntity.ok(ratingService.createRating(rating));
     }
 
-    @RequestMapping(path = "/wines/{id}", method = RequestMethod.PUT)
-    public ResponseEntity<Wine> updateWine(@PathVariable String id, @RequestBody Wine wine) {
-        log.info("process=update-wine, wine_id={}", id);
-        wine.setId(id);
-        wine.setUpdatedAt(LocalDateTime.now());
-        return ResponseEntity.ok(wineService.updateWine(wine));
+    @RequestMapping(path = "/ratings/{id}", method = RequestMethod.PUT)
+    public ResponseEntity<Rating> updateRating(@PathVariable String id, @RequestBody Rating rating) {
+        log.info("process=update-rating, rating_id={}", id);
+        rating.setId(id);
+        rating.setUpdatedAt(LocalDateTime.now());
+        return ResponseEntity.ok(ratingService.updateRating(rating));
     } 
 
-    @RequestMapping(path = "/wines/{id}", method = RequestMethod.DELETE)
-    public void deleteWine(@PathVariable String id) {
-        log.info("process=delete-wine, wine_id={}", id);
-        wineService.deleteWine(id);
+    @RequestMapping(path = "/ratings/{id}", method = RequestMethod.DELETE)
+    public void deleteRating(@PathVariable String id) {
+        log.info("process=delete-rating, rating_id={}", id);
+        ratingService.deleteRating(id);
     }
 }

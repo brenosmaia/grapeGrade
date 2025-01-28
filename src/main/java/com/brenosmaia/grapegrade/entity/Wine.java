@@ -3,6 +3,7 @@ package com.brenosmaia.grapegrade.entity;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import javax.persistence.Column;
 
@@ -35,12 +36,10 @@ public class Wine implements Serializable {
 	@Column(nullable = false)
 	private String country;
 	
-	@Column(nullable = false)
-	private String grape;
-	
+	private List<String> grape;
 	private String region;
-	
 	private String producer;
+	private String alcoholPercentage;
 	
 	@Column(nullable = false)
 	private int year;
@@ -48,6 +47,7 @@ public class Wine implements Serializable {
 	private BigDecimal grade;
 	
 	private LocalDateTime createdAt;
+	private LocalDateTime updatedAt;
 	
 	public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;

@@ -1,5 +1,7 @@
 package com.brenosmaia.grapegrade.service;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,25 +20,27 @@ public class RatingService {
         this.ratingRepository = ratingRepository;
      }
      
-	public void createRating(Rating rating) {
+	public Rating createRating(Rating rating) {
         try {
-            ratingRepository.save(rating);
+            return ratingRepository.save(rating);
         } catch (Exception e) {
             e.printStackTrace();
+            return null;
         }
 	}
 	
-	public void updateRating(Rating rating) {
+	public Rating updateRating(Rating rating) {
         try {
-            ratingRepository.save(rating);
+            return ratingRepository.save(rating);
         } catch (Exception e) {
             e.printStackTrace();
+            return null;
         }
 	}
 	
 	public void deleteRating(String id) {
         try {
-            ratingRepository.delete(id);
+        	ratingRepository.delete(id);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -44,5 +48,9 @@ public class RatingService {
 	
 	public Rating getRatingById(String id) {
 		return ratingRepository.findById(id);
+	}
+	
+	public List<Rating> getAllRatings() {
+		return ratingRepository.findAll();
 	}
 }

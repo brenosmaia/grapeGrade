@@ -32,9 +32,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		auth.userDetailsService(loginService).passwordEncoder(passwordEncoder());
     }
 	
-	 @Override
+	@Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.csrf().disable().authorizeRequests().antMatchers("/authenticate")
+        http.csrf().disable().authorizeRequests().antMatchers("/authenticate", "/users/register")
                 .permitAll().anyRequest().authenticated()
                 .and().exceptionHandling().and().sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS);

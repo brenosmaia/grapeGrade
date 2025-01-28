@@ -49,7 +49,7 @@ public class UserController {
     }
 
     @ResponseStatus(CREATED)
-    @RequestMapping(path = "/users", method = RequestMethod.POST)
+    @RequestMapping(path = "/users/register", method = RequestMethod.POST)
     public ResponseEntity<User> createUser(@RequestBody User user) {
         log.info("process=create-user, user_email={}", user.getEmail());
         user.setCreatedAt(LocalDateTime.now());
