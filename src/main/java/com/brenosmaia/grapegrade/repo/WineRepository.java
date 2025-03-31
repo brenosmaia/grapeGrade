@@ -3,6 +3,8 @@ package com.brenosmaia.grapegrade.repo;
 import java.util.List;
 
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Repository;
 
 import com.brenosmaia.grapegrade.entity.Wine;
@@ -30,5 +32,14 @@ public class WineRepository {
 	
 	public void delete(String id) {
 		mongoTemplate.remove(mongoTemplate.findById(id, Wine.class));
+	}
+
+	public Wine findExistingWine(Wine wine) {
+		Query query = new Query();
+		query.addCriteria(Criteria.where("name").is(wine.getName())
+			.and("year").is(wine.getYear())
+			.and("grape").is(wine.getGrape()));
+		
+		return mongoTemplate.findOne(query, Wine.class);
 	}
 }

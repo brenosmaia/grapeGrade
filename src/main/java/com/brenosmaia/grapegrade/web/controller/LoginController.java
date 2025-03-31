@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -21,12 +23,12 @@ public class LoginController {
 	@Autowired
 	private AuthenticationManager authenticationManager;
 	
-	@RequestMapping(path = "/login", method = RequestMethod.GET)
+	@GetMapping(path = "/login")
 	public String login() {
 		return "Welcome to GrapeGrade!";
 	}
 	
-	@RequestMapping(path = "/authenticate", method = RequestMethod.POST)
+	@PostMapping(path = "/authenticate")
 	public String generateToken(@RequestBody AuthRequest authRequest) throws Exception {
 		try {
 	        Authentication authentication = new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword());

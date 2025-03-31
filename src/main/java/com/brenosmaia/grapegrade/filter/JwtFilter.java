@@ -25,6 +25,11 @@ public class JwtFilter extends OncePerRequestFilter {
     @Autowired
     private LoginService service;
 
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        String path = request.getServletPath();
+        return path.equals("/authenticate") || path.equals("/users/register") || path.equals("/login");
+    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, FilterChain filterChain) throws ServletException, IOException {

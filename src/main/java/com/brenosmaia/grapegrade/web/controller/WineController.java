@@ -7,7 +7,11 @@ import org.jboss.logging.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -29,7 +33,7 @@ public class WineController {
 		this.wineService = wineService;
 	}
 	
-	@RequestMapping(path = "/wine", method = RequestMethod.GET)
+	@GetMapping(path = "/wine")
 	public ResponseEntity<List<Wine>> getWines() {
 		log.info("process=get-wines");
 		List<Wine> wines = wineService.getAllWines();
@@ -37,7 +41,7 @@ public class WineController {
 		return wines.isEmpty() ? ResponseEntity.notFound().build() : ResponseEntity.ok(wines);
 	}
 	
-	@RequestMapping(path = "/wine/{id}", method = RequestMethod.GET)
+	@GetMapping(path = "/wine/{id}")
 	public ResponseEntity<Wine> getWine(@PathVariable String id) {
 		log.info("process=get-wine, wine_id={}", id);
 		Wine wine = wineService.getWineById(id);
@@ -45,7 +49,7 @@ public class WineController {
 		return wine == null ? ResponseEntity.notFound().build() : ResponseEntity.ok(wine);
 	}
 	
-	@RequestMapping(path = "/wine", method = RequestMethod.POST)
+	@PostMapping(path = "/wine")
 	public ResponseEntity<Wine> createWine(@RequestBody Wine wine) {
 		log.info("process=create-wine, wine={}", wine.getName());
 		wine.setCreatedAt(LocalDateTime.now());
@@ -53,14 +57,14 @@ public class WineController {
 		return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(wine);
 	}
 	
-	@RequestMapping(path = "/wine/{id}", method = RequestMethod.PUT)
+	@PutMapping(path = "/wine/{id}")
 	public ResponseEntity<Wine> updateWine(String id, @RequestBody Wine wine) {
 		log.info("process=update-wine, wine_id={}", id);
 		wineService.updateWine(wine);
 		return ResponseEntity.ok(wine);
 	}
 	
-	@RequestMapping(path = "/wine/{id}", method = RequestMethod.DELETE)
+	@DeleteMapping(path = "/wine/{id}")
 	public void deleteWine(String id) {
 		log.info("process=delete-wine, wine_id={}", id);
 		wineService.deleteWine(id);

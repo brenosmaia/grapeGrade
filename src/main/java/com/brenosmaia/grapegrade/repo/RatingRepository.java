@@ -31,4 +31,6 @@ public class RatingRepository {
 	public void delete(String id) {
 		mongoTemplate.remove(mongoTemplate.findById(id, Rating.class));
 	}
+
+	
 }

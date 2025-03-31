@@ -37,8 +37,6 @@ public class Wine implements Serializable {
 	private String country;
 	
 	private List<String> grape;
-	private String region;
-	private String producer;
 	private String alcoholPercentage;
 	
 	@Column(nullable = false)

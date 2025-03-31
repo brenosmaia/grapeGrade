@@ -7,7 +7,11 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -30,7 +34,7 @@ public class RatingController {
         this.ratingService = ratingService;
     }
 
-    @RequestMapping(path = "/ratings", method = RequestMethod.GET)
+    @GetMapping(path = "/ratings")
     public ResponseEntity<List<Rating>> getRatings() {
         log.info("process=get-ratings");
         List<Rating> ratings = ratingService.getAllRatings();
@@ -39,7 +43,7 @@ public class RatingController {
         		: ResponseEntity.ok(ratings);
     }
 
-    @RequestMapping(path = "/ratings/{id}", method = RequestMethod.GET)
+    @GetMapping(path = "/ratings/{id}")
     public ResponseEntity<Rating> getRating(@PathVariable String id) {
         log.info("process=get-rating, rating_id={}", id);
         Rating rating = ratingService.getRatingById(id);
@@ -49,14 +53,14 @@ public class RatingController {
     }
 
     @ResponseStatus(CREATED)
-    @RequestMapping(path = "/ratings", method = RequestMethod.POST)
+    @PostMapping(path = "/ratings")
     public ResponseEntity<Rating> createRating(@RequestBody Rating rating) {
         log.info("process=create-rating, rating={}", rating.toString());
         rating.setCreatedAt(LocalDateTime.now());
         return ResponseEntity.ok(ratingService.createRating(rating));
     }
 
-    @RequestMapping(path = "/ratings/{id}", method = RequestMethod.PUT)
+    @PutMapping(path = "/ratings/{id}")
     public ResponseEntity<Rating> updateRating(@PathVariable String id, @RequestBody Rating rating) {
         log.info("process=update-rating, rating_id={}", id);
         rating.setId(id);
@@ -64,7 +68,7 @@ public class RatingController {
         return ResponseEntity.ok(ratingService.updateRating(rating));
     } 
 
-    @RequestMapping(path = "/ratings/{id}", method = RequestMethod.DELETE)
+    @DeleteMapping(path = "/ratings/{id}")
     public void deleteRating(@PathVariable String id) {
         log.info("process=delete-rating, rating_id={}", id);
         ratingService.deleteRating(id);
