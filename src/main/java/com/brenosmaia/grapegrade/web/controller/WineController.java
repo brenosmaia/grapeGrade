@@ -15,8 +15,12 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.brenosmaia.grapegrade.dto.TopType;
+import com.brenosmaia.grapegrade.dto.TopWinesResponse;
+import com.brenosmaia.grapegrade.dto.WineFilter;
 import com.brenosmaia.grapegrade.entity.Wine;
 import com.brenosmaia.grapegrade.service.WineService;
 
@@ -68,5 +72,22 @@ public class WineController {
 	public void deleteWine(String id) {
 		log.info("process=delete-wine, wine_id={}", id);
 		wineService.deleteWine(id);
+	}
+
+	@GetMapping("wine/topWines")
+	public ResponseEntity<TopWinesResponse> getTopWines(
+			@RequestParam(required = false) String grape,
+			@RequestParam(required = false) String country,
+			@RequestParam(required = false) String type,
+			@RequestParam(required = false) Integer year,
+			@RequestParam(defaultValue = "BOTH") TopType topType) {
+		
+		WineFilter filter = new WineFilter();
+		filter.setGrape(grape);
+		filter.setCountry(country);
+		filter.setType(type);
+		filter.setYear(year);
+
+		return ResponseEntity.ok(wineService.getTopWines(filter, topType));
 	}
 }

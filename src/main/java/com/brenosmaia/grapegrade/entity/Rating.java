@@ -1,5 +1,6 @@
 package com.brenosmaia.grapegrade.entity;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 import javax.persistence.Column;
@@ -28,7 +29,7 @@ public class Rating {
 	@Column(name = "wine_id", nullable = false)
 	private Wine wine;
 	
-	private Integer grade;
+	private BigDecimal grade;
 	private LocalDateTime createdAt;
 	private LocalDateTime updatedAt;
 

@@ -38,7 +38,8 @@ public class WineRepository {
 		Query query = new Query();
 		query.addCriteria(Criteria.where("name").is(wine.getName())
 			.and("year").is(wine.getYear())
-			.and("grape").is(wine.getGrape()));
+			.and("grape").is(wine.getGrape())
+			.and("type").is(wine.getType()));
 		
 		return mongoTemplate.findOne(query, Wine.class);
 	}

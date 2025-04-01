@@ -3,9 +3,11 @@ package com.brenosmaia.grapegrade.service;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
@@ -47,7 +49,7 @@ public class ImportService {
 
     public void importExcel(MultipartFile file, String username) throws IOException {
     	byte[] fileBytes = file.getBytes();
-    	InputStream is = new ByteArrayInputStream(fileBytes); // Garante que o InputStream não está vazio
+    	InputStream is = new ByteArrayInputStream(fileBytes);
     	
     	try {
             Workbook workbook = WorkbookFactory.create(is);
@@ -79,17 +81,15 @@ public class ImportService {
 
     private void createOrUpdateRating(Row row, Wine wine) {
         try {
-            // Verifica se é um vinho repetido
-            Boolean isRepeat = getBooleanCellValue(row.getCell(6));
-            if (Boolean.TRUE.equals(isRepeat)) {
-                return; // Ignora avaliações de vinhos repetidos
-            }
-
             // Pega o username e a nota
             String username = getStringCellValue(row.getCell(7));
-            Integer grade = getIntCellValue(row.getCell(8));
+            BigDecimal grade = getBigDecimalCellValue(row.getCell(8));
 
-            if (username == null || grade == null || grade < 0 || grade > 10) {
+            log.info("Valor lido da célula: {}", grade.toString());
+            log.info("Valor convertido para BigDecimal: {}", grade);
+
+            if (username == null || grade == null || grade.compareTo(BigDecimal.ZERO) < 0 || grade.compareTo(new BigDecimal("10")) > 0) {
+                log.warn("Nota inválida ou usuário não encontrado para o vinho: {}", wine.getName());
                 return;
             }
 
@@ -111,7 +111,9 @@ public class ImportService {
                 // Atualiza a avaliação existente
                 existingRating.setGrade(grade);
                 existingRating.setUpdatedAt(LocalDateTime.now());
-                ratingRepository.save(existingRating);
+                Rating savedRating = ratingRepository.save(existingRating);
+                log.info("Avaliação atualizada para o vinho: {} pelo usuário: {} com nota: {} (salvo como: {})", 
+                    wine.getName(), username, grade, savedRating.getGrade());
             } else {
                 // Cria uma nova avaliação
                 Rating rating = Rating.builder()
@@ -120,7 +122,9 @@ public class ImportService {
                     .grade(grade)
                     .createdAt(LocalDateTime.now())
                     .build();
-                ratingRepository.save(rating);
+                Rating savedRating = ratingRepository.save(rating);
+                log.info("Nova avaliação criada para o vinho: {} pelo usuário: {} com nota: {} (salvo como: {})", 
+                    wine.getName(), username, grade, savedRating.getGrade());
             }
         } catch (Exception e) {
             log.error("Erro ao criar/atualizar avaliação da linha: " + row.getRowNum(), e);
@@ -166,6 +170,37 @@ public class ImportService {
         }
     }
 
+    private BigDecimal getBigDecimalCellValue(Cell cell) {
+        if (cell == null) return null;
+        try {
+            // Primeiro tenta ler como número
+            cell.setCellType(CellType.NUMERIC);
+            return BigDecimal.valueOf(cell.getNumericCellValue());
+        } catch (Exception e) {
+            try {
+                // Se falhar, tenta ler como string e converte
+                cell.setCellType(CellType.STRING);
+                String value = cell.getStringCellValue().trim();
+                // Substitui vírgula por ponto para converter corretamente
+                value = value.replace(",", ".");
+                return new BigDecimal(value);
+            } catch (Exception ex) {
+                log.error("Erro ao converter valor para número: {}", cell.getStringCellValue());
+                return null;
+            }
+        }
+    }
+
+    private Boolean getBooleanCellValue(Cell cell) {
+        if (cell == null) return false;
+        try {
+            cell.setCellType(CellType.BOOLEAN);
+            return cell.getBooleanCellValue();
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
     private List<String> getGrapesList(String grapes) {
         if (grapes == null || grapes.isEmpty()) {
             return new ArrayList<>();
@@ -175,21 +210,5 @@ public class ImportService {
             grapeList.add(grape.trim());
         }
         return grapeList;
-    }
-
-    private Boolean getBooleanCellValue(Cell cell) {
-        if (cell == null) return null;
-        try {
-            cell.setCellType(CellType.BOOLEAN);
-            return cell.getBooleanCellValue();
-        } catch (Exception e) {
-            try {
-                cell.setCellType(CellType.STRING);
-                String value = cell.getStringCellValue().toLowerCase();
-                return value.equals("sim") || value.equals("s") || value.equals("true");
-            } catch (Exception ex) {
-                return null;
-            }
-        }
     }
 } 
