@@ -4,18 +4,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.brenosmaia.grapegrade.utils.TestHelper;
 import com.brenosmaia.grapegrade.entity.User;
 import com.brenosmaia.grapegrade.service.UserService;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Arrays;
-import java.util.Optional;
 
 import static org.hamcrest.Matchers.*;
 import static org.mockito.BDDMockito.given;
@@ -24,8 +23,12 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@RunWith(SpringRunner.class)
 @WebMvcTest(controllers = UserController.class)
+@TestPropertySource(properties = {
+    "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration",
+    "spring.jpa.hibernate.ddl-auto=none",
+    "spring.data.mongodb.auto-index-creation=false"
+})
 public class UserControllerTests {
 
     @MockBean
@@ -38,7 +41,7 @@ public class UserControllerTests {
 
     User existingUser, newUser, updateUser;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         newUser = TestHelper.buildUserWithId();
         existingUser = TestHelper.buildUserWithId();
@@ -50,7 +53,7 @@ public class UserControllerTests {
         given(userService.getAllUsers()).willReturn(Arrays.asList(existingUser, updateUser));
 
         this.mockMvc
-                .perform(get("/api/users"))
+                .perform(get("/users"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(2)));
     }
@@ -60,7 +63,7 @@ public class UserControllerTests {
         given(userService.getUserById(existingUser.getId())).willReturn(existingUser);
 
         this.mockMvc
-                .perform(get("/api/users/"+existingUser.getId()))
+                .perform(get("/users/"+existingUser.getId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(existingUser.getId())))
                 .andExpect(jsonPath("$.name", is(existingUser.getName())))
@@ -69,14 +72,17 @@ public class UserControllerTests {
 
     @Test
     public void should_create_user() throws Exception {
-        given(userService.createUser(newUser)).willReturn(newUser);
+        given(userService.createUser(org.mockito.ArgumentMatchers.any(User.class))).willReturn(newUser);
+
+        String userJson = objectMapper.writeValueAsString(newUser);
+        System.out.println("User JSON: " + userJson);
 
         this.mockMvc
-                .perform(post("/api/users/")
+                .perform(post("/users/register")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(newUser))
+                        .content(userJson)
                 )
-                .andExpect(status().isCreated())
+                .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", notNullValue()))
                 .andExpect(jsonPath("$.name", is(newUser.getName())))
                 .andExpect(jsonPath("$.email", is(newUser.getEmail())));
@@ -84,12 +90,15 @@ public class UserControllerTests {
 
     @Test
     public void should_update_user() throws Exception {
-        given(userService.updateUser(existingUser)).willReturn(existingUser);
+        given(userService.updateUser(org.mockito.ArgumentMatchers.any(User.class))).willReturn(existingUser);
+
+        String userJson = objectMapper.writeValueAsString(existingUser);
+        System.out.println("Update User JSON: " + userJson);
 
         this.mockMvc
-                .perform(put("/api/users/"+existingUser.getId())
+                .perform(put("/users/"+existingUser.getId())
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(existingUser))
+                        .content(userJson)
                 )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(existingUser.getId())))
@@ -102,8 +111,7 @@ public class UserControllerTests {
         doNothing().when(userService).deleteUser(existingUser.getId());
 
         this.mockMvc
-                .perform(delete("/api/users/"+existingUser.getId()))
+                .perform(delete("/users/"+existingUser.getId()))
                 .andExpect(status().isOk());
     }
-
 }

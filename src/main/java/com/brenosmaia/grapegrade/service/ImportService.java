@@ -7,7 +7,6 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
@@ -85,50 +84,60 @@ public class ImportService {
             String username = getStringCellValue(row.getCell(7));
             BigDecimal grade = getBigDecimalCellValue(row.getCell(8));
 
-            log.info("Valor lido da célula: {}", grade.toString());
-            log.info("Valor convertido para BigDecimal: {}", grade);
+            log.info("Value read from cell: {}", grade.toString());
+            log.info("Value converted to BigDecimal: {}", grade);
 
             if (username == null || grade == null || grade.compareTo(BigDecimal.ZERO) < 0 || grade.compareTo(new BigDecimal("10")) > 0) {
-                log.warn("Nota inválida ou usuário não encontrado para o vinho: {}", wine.getName());
+                log.warn("Invalid grade or user not found for the wine: {}", wine.getName());
                 return;
             }
 
             // Busca o usuário
             User user = userRepository.findByUsername(username);
             if (user == null) {
-                log.warn("Usuário não encontrado: {}", username);
+                log.warn("User not found: {}", username);
                 return;
             }
-
-            // Verifica se já existe uma avaliação deste usuário para este vinho
-            Query query = new Query();
-            query.addCriteria(Criteria.where("wine.id").is(wine.getId())
-                .and("user.id").is(user.getId()));
             
+            Query query = verifyIfRatingAlreadyExists(wine, user);
             Rating existingRating = mongoTemplate.findOne(query, Rating.class);
 
             if (existingRating != null) {
-                // Atualiza a avaliação existente
-                existingRating.setGrade(grade);
-                existingRating.setUpdatedAt(LocalDateTime.now());
-                Rating savedRating = ratingRepository.save(existingRating);
-                log.info("Avaliação atualizada para o vinho: {} pelo usuário: {} com nota: {} (salvo como: {})", 
-                    wine.getName(), username, grade, savedRating.getGrade());
+                updateExistingRating(wine, username, grade, existingRating);
             } else {
                 // Cria uma nova avaliação
-                Rating rating = Rating.builder()
-                    .wine(wine)
-                    .user(user)
-                    .grade(grade)
-                    .createdAt(LocalDateTime.now())
-                    .build();
-                Rating savedRating = ratingRepository.save(rating);
-                log.info("Nova avaliação criada para o vinho: {} pelo usuário: {} com nota: {} (salvo como: {})", 
-                    wine.getName(), username, grade, savedRating.getGrade());
+                createNewRating(wine, username, grade, user);
             }
         } catch (Exception e) {
-            log.error("Erro ao criar/atualizar avaliação da linha: " + row.getRowNum(), e);
+            log.error("Error creating/updating rating at line: " + row.getRowNum(), e);
         }
+    }
+
+    private void createNewRating(Wine wine, String username, BigDecimal grade, User user) {
+        Rating rating = Rating.builder()
+            .wine(wine)
+            .user(user)
+            .grade(grade)
+            .createdAt(LocalDateTime.now())
+            .build();
+        Rating savedRating = ratingRepository.save(rating);
+        log.info("New rating created for the wine: {} by the user: {} with grade: {} (saved as: {})", 
+            wine.getName(), username, grade, savedRating.getGrade());
+    }
+
+    private void updateExistingRating(Wine wine, String username, BigDecimal grade, Rating existingRating) {
+        existingRating.setGrade(grade);
+        existingRating.setUpdatedAt(LocalDateTime.now());
+        Rating savedRating = ratingRepository.save(existingRating);
+        log.info("Rating updated to the wine: {} by the user: {} with grade: {} (saved as: {})", 
+            wine.getName(), username, grade, savedRating.getGrade());
+    }
+
+    private Query verifyIfRatingAlreadyExists(Wine wine, User user) {
+        Query query = new Query();
+        query.addCriteria(Criteria.where("wine.id").is(wine.getId())
+            .and("user.id").is(user.getId()));
+        return query;
     }
 
     private Wine createWineFromRow(Row row) {
@@ -145,7 +154,7 @@ public class ImportService {
 
             return wine;
         } catch (Exception e) {
-            log.error("Erro ao criar vinho da linha: " + row.getRowNum(), e);
+            log.error("Error creating wine at line: " + row.getRowNum(), e);
             return null;
         }
     }
@@ -188,16 +197,6 @@ public class ImportService {
                 log.error("Erro ao converter valor para número: {}", cell.getStringCellValue());
                 return null;
             }
-        }
-    }
-
-    private Boolean getBooleanCellValue(Cell cell) {
-        if (cell == null) return false;
-        try {
-            cell.setCellType(CellType.BOOLEAN);
-            return cell.getBooleanCellValue();
-        } catch (Exception e) {
-            return false;
         }
     }
 

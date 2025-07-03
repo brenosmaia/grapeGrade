@@ -120,10 +120,8 @@ public class WineService {
 
 		List<Wine> wines = results.getMappedResults();
 
-		// Buscar todas as avaliações
 		List<Rating> allRatings = ratingRepository.findAll();
 
-		// Calcular média de notas e ordenar
 		List<WineWithAverageRating> winesWithAverage = wines.stream()
 			.map(wine -> {
 				List<Rating> wineRatings = allRatings.stream()
@@ -141,7 +139,7 @@ public class WineService {
 				return new WineWithAverageRating(
 					wine.getId(),
 					wine.getName(),
-					wine.getGrape().get(0), // Pegando a primeira uva da lista
+					wine.getGrape().get(0),
 					wine.getCountry(),
 					wine.getType(),
 					wine.getYear(),

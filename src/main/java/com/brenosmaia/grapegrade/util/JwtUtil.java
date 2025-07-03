@@ -19,9 +19,9 @@ import io.jsonwebtoken.security.Keys;
 @Service
 public class JwtUtil {
 
-	private String secretkey = "Vx2iFmd4Qp9XKZq3lGyDcvHs6rNbRJt0OoL7Afwk5SuEPjYWhTz1IeMnCaUbgB8d";
+	private static String secretkey = "Vx2iFmd4Qp9XKZq3lGyDcvHs6rNbRJt0OoL7Afwk5SuEPjYWhTz1IeMnCaUbgB8d";
 	
-	private String createToken(Map<String, Object> claims, String username) {
+	private static String createToken(Map<String, Object> claims, String username) {
 		return Jwts.builder()
 				.claims().empty().add(claims)
 				.subject(username)
@@ -30,36 +30,36 @@ public class JwtUtil {
 		        .signWith(getSigningKey()).compact();
 	}
 	
-	private Key getSigningKey() {
+	private static Key getSigningKey() {
 		return Keys.hmacShaKeyFor(secretkey.getBytes(StandardCharsets.UTF_8));
 	}
 	
-	private Boolean isTokenExpired(String token) {
+	private static Boolean isTokenExpired(String token) {
         return extractExpiration(token).before(new Date());
     }
 	
-	private Claims extractAllClaims(String token) {
+	private static Claims extractAllClaims(String token) {
 		return Jwts.parser().verifyWith((SecretKey) getSigningKey()).build().parseSignedClaims(token).getPayload();
 	}
 	
-	public String extractUsername(String token) {
+	public static String extractUsername(String token) {
 		return extractClaim(token, Claims::getSubject);
 	}
 	
-	public Date extractExpiration(String token) {
+	public static Date extractExpiration(String token) {
 		return extractClaim(token, Claims::getExpiration);
 	}
 	
-	public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
+	public static <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
 		final Claims claims = extractAllClaims(token);
 		return claimsResolver.apply(claims);
 	}
 	
-	public String generateToken(String username) {
+	public static String generateToken(String username) {
 		return createToken(new HashMap<String, Object>(), username);
 	}
 	
-	public Boolean validateToken(String token, UserDetails userDetails) {
+	public static Boolean validateToken(String token, UserDetails userDetails) {
 		final String username = extractUsername(token);
 		return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
 	}

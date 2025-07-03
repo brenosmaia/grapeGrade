@@ -15,14 +15,13 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.brenosmaia.grapegrade.service.LoginService;
 import com.brenosmaia.grapegrade.util.JwtUtil;
+
 import java.io.IOException;
 
 @Component
 public class JwtFilter extends OncePerRequestFilter {
 
-    @Autowired
-    private JwtUtil jwtUtil;
-    @Autowired
+    @Autowired(required = false)
     private LoginService service;
 
     @Override
@@ -41,20 +40,25 @@ public class JwtFilter extends OncePerRequestFilter {
 
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             token = authorizationHeader.substring(7);
-            userName = jwtUtil.extractUsername(token);
+            userName = JwtUtil.extractUsername(token);
         }
 
-        if (userName != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+        if (userName != null && SecurityContextHolder.getContext().getAuthentication() == null && service != null) {
 
-            UserDetails userDetails = service.loadUserByUsername(userName);
+            try {
+                UserDetails userDetails = service.loadUserByUsername(userName);
 
-            if (jwtUtil.validateToken(token, userDetails)) {
+                if (JwtUtil.validateToken(token, userDetails)) {
 
-                UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
-                        new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-                usernamePasswordAuthenticationToken
-                        .setDetails(new WebAuthenticationDetailsSource().buildDetails(httpServletRequest));
-                SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+                    UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
+                            new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                    usernamePasswordAuthenticationToken
+                            .setDetails(new WebAuthenticationDetailsSource().buildDetails(httpServletRequest));
+                    SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+                }
+            } catch (Exception e) {
+                // Log the error but don't break the filter chain
+                System.err.println("Error processing JWT token: " + e.getMessage());
             }
         }
         

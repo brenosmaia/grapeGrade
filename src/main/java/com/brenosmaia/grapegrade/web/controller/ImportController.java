@@ -28,15 +28,15 @@ public class ImportController {
             Authentication authentication) {
         try {
             if (file.isEmpty()) {
-                return ResponseEntity.badRequest().body("O arquivo está vazio");
+                return ResponseEntity.badRequest().body("The file is empty");
             }
             
             String username = authentication.getName();
             importService.importExcel(file, username);
-            return ResponseEntity.ok("Importação concluída com sucesso!");
+            return ResponseEntity.ok("Importation completed successfully!");
         } catch (IOException e) {
-            log.error("Erro ao importar arquivo Excel", e);
-            return ResponseEntity.badRequest().body("Erro ao importar arquivo: " + e.getMessage());
+            log.error("Error importing Excel file", e);
+            return ResponseEntity.badRequest().body("Error importing file: " + e.getMessage());
         }
     }
 } 

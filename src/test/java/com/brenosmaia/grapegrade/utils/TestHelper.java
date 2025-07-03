@@ -12,7 +12,9 @@ public class TestHelper {
         String uuid = UUID.randomUUID().toString();
         return User.builder()
                 .name("name-"+uuid)
+                .username("username-"+uuid)
                 .email(format("someone-%s@gmail.com", uuid))
+                .password("password123")
                 .build();
     }
 
@@ -22,7 +24,9 @@ public class TestHelper {
         return User.builder()
                 .id(String.valueOf(random.nextLong()))
                 .name("name-"+uuid)
+                .username("username-"+uuid)
                 .email(format("someone-%s@gmail.com", uuid))
+                .password("password123")
                 .build();
     }
 }

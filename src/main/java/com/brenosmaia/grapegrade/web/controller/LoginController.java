@@ -7,8 +7,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.brenosmaia.grapegrade.entity.AuthRequest;
@@ -16,9 +14,6 @@ import com.brenosmaia.grapegrade.util.JwtUtil;
 
 @RestController
 public class LoginController {
-
-	@Autowired
-	private JwtUtil jwtUtil;
 	
 	@Autowired
 	private AuthenticationManager authenticationManager;
@@ -39,6 +34,6 @@ public class LoginController {
 			throw new Exception("Invalid username or password", e);
 		}
 		
-		return jwtUtil.generateToken(authRequest.getUsername());
+		return JwtUtil.generateToken(authRequest.getUsername());
 	}
 }
