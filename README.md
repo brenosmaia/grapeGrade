@@ -26,8 +26,8 @@ A wine rating and review application that helps wine enthusiasts discover and ra
 
 ## Prerequisites
 
-- Java 11
-- MongoDB running locally or a MongoDB Atlas connection string
+- Java 17
+- MongoDB running locally
 - Maven 3.6 or higher
 
 ## Getting Started
