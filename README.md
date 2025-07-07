@@ -34,7 +34,7 @@ A wine rating and review application that helps wine enthusiasts discover and ra
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/grapegrade.git
+git clone https://github.com/brenosmaia/grapegrade.git
 ```
 
 2. Navigate to the project directory:
