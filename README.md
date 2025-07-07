@@ -95,16 +95,3 @@ The Excel file should have the following columns:
 7. Username
 8. Rating (0-10)
 
-## Contributing
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
-## Acknowledgments
-
-- Spring Boot team for the amazing framework
-- MongoDB team for the powerful database
-- All contributors who help improve this project
