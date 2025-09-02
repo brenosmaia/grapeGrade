@@ -1,0 +1,33 @@
+<div class="login-container">
+  <div class="login-box">
+    <div class="logo-container">
+      <!-- Você pode adicionar seu logo aqui -->
+      <h2>GrapeGrade</h2>
+    </div>
+    <p class="subtitle">Bem-vindo! Por favor, faça o login.</p>
+
+    <form (ngSubmit)="onSubmit()">
+      <div class="input-group">
+        <label for="username">Usuário</label>
+        <input id="username" type="text" [(ngModel)]="username" name="username" placeholder="Digite seu usuário" required>
+      </div>
+
+      <div class="input-group">
+        <label for="password">Senha</label>
+        <input id="password" type="password" [(ngModel)]="password" name="password" placeholder="Digite sua senha" required>
+      </div>
+
+      <div *ngIf="errorMessage" class="error-message">
+        {{ errorMessage }}
+      </div>
+
+      <button type="submit" class="login-button">Entrar</button>
+
+      <div class="footer-links">
+        <a href="#">Esqueceu a senha?</a>
+        <span>|</span>
+        <a href="#">Criar conta</a>
+      </div>
+    </form>
+  </div>
+</div>
