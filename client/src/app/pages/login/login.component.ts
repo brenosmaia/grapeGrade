@@ -20,13 +20,20 @@ export class LoginComponent {
 
   onSubmit() {
     this.authService.login(this.username, this.password).subscribe({
-      next: (response) => {
-        // Lógica de sucesso - por exemplo, salvar o token e redirecionar
-        console.log('Login bem-sucedido', response);
-        // this.router.navigate(['/dashboard']); // Exemplo de redirecionamento
+      next: (response: any) => {
+        console.log('Successful login', response);
+        // Store the token in localStorage
+        if (response && response.token) {
+          localStorage.setItem('authToken', response.token);
+          // Navigates to the app
+          this.router.navigate(['/app']);
+        } else {
+            console.error('Token not found');
+            this.errorMessage = 'Ocorreu um erro inesperado. Tente novamente.';
+        }
       },
       error: (error) => {
-        console.error('Erro no login', error);
+        console.error('Login error', error);
         this.errorMessage = 'Usuário ou senha inválidos. Tente novamente.';
       }
     });

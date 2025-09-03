@@ -1,0 +1,26 @@
+<header class="main-header">
+  <nav class="main-nav">
+    <div class="logo">
+      GrapeGrade
+    </div>
+    <ul class="nav-links">
+      <li>
+        <a routerLink="my-reviews" routerLinkActive="active-link">Minhas Avaliações</a>
+      </li>
+      <li>
+        <a routerLink="wine-list" routerLinkActive="active-link">Vinhos</a>
+      </li>
+      <li>
+        <a routerLink="profile" routerLinkActive="active-link">Perfil</a>
+      </li>
+    </ul>
+    <div class="user-actions">
+      <button (click)="logout()" class="logout-button">Sair</button>
+    </div>
+  </nav>
+</header>
+
+<main class="content-area">
+  <!-- Os componentes das rotas filhas serão renderizados aqui -->
+  <router-outlet></router-outlet>
+</main>
